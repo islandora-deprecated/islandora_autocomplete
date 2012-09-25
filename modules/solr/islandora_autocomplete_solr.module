@@ -1,0 +1,118 @@
+<?php
+
+/**
+ * @file
+ *
+ * Contains the hooks this module responds to. As well as any
+ * functions that need to be present for every page request.
+ */
+ini_set("auto_detect_line_endings", FALSE);
+
+/**
+ * Implements hook_register_autocomplete_source().
+ */
+function islandora_autocomplete_solr_register_autocomplete_source() {
+  return array(
+    array(
+      'type' => 'solr',
+      'label' => 'Solr',
+      'module' => 'islandora_autocomplete_solr',
+      'form' => array(
+        'type' => 'inc',
+        'file' => 'includes/islandora_autocomplete_solr.admin'
+      ),
+    )
+  );
+}
+
+/**
+ * Implements hook_delete_autocomplete_url().
+ *
+ * Called when a autocomplete url is deleted, used to notify autocomplete source modules so that
+ * they may do the neccesary clean up required.
+ *
+ * @param string $url_id
+ *   The ID of the url that is to be deleted.
+ */
+function islandora_autocomplete_solr_delete_autocomplete_url($url_id) {
+  module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
+  islandora_autocomplete_solr_db_delete_url_source($url_id);
+}
+
+
+/**
+ * Implements islandora_autocomplete_url_source();
+ *
+ * Query's Solr field associated with the given URL.
+ *
+ * Return an alphabetically ordered list of values that match the query value.
+ *
+ * @param int $url_id
+ *   The unique identifier for the Autocomplete URL.
+ * @param string $query
+ *   The values to query against the Solr.
+ *
+ * @return array
+ */
+function islandora_autocomplete_url_query_solr($url_id, $query = '', $index = NULL) {
+
+  module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
+  module_load_include('inc', 'islandora_solr_search', 'IslandoraSolrQueryProcessor');
+
+  $fields = array();
+  $source = islandora_autocomplete_solr_db_get_url_source($url_id);
+  if ($source) {
+    // set variables
+    $solr_field = $source->solr_field;
+    $comma_separated = $source->comma_separated;
+
+    // split query if comma separated autocompletion is enabled
+    if ($comma_separated == 1) {
+      // check for last comma
+      $comma_pos = strrpos($query, ',');
+      // if there is a comma found
+      if ($comma_pos !== FALSE) {
+        // split in 2 strings
+        $query_prefix = trim(substr($query, 0, $comma_pos));
+        $query = trim(substr($query, $comma_pos + 1));
+      }
+    }
+
+    // use Solr faceting to get list of names
+    $parsed_url = parse_url(variable_get('islandora_solr_search_block_url', 'http://localhost:8080/solr'));
+    $solr_object = new Apache_Solr_Service($parsed_url['host'], $parsed_url['port'], $parsed_url['path']);
+
+    // get the actual results.
+    $solr_query = "$solr_field:[* TO *]";
+
+    // set facet parameters
+    $facet_params = array(
+      'facet' => 'true',
+      'facet.field' => $solr_field,
+      'facet.sort' => 'index',
+      'facet.mincount' => 1,
+      'facet.limit' => 100000,
+      'qt' => variable_get('islandora_solr_search_block_request_handler', 'standard'),
+    );
+
+    // set the facet prefix
+    $facet_params['facet.prefix'] = $query;
+
+    // solr results in json format
+    $result_object = json_decode($solr_object->search($solr_query, 0, 0, $facet_params)->getRawResponse());
+    // raw results
+    $fields_raw = (array) $result_object->facet_counts->facet_fields->$solr_field;
+
+    // map the array
+    foreach ($fields_raw as $key => $value) {
+      if ($comma_separated == 1 AND $comma_pos !== FALSE) {
+        $key_prefix = $query_prefix . ', ' . $key;
+        $fields[$key_prefix] = $key;
+      }
+      else {
+        $fields[$key] = $key;
+      }
+    }
+  }
+  return $fields;
+}
