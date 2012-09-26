@@ -99,6 +99,14 @@ function islandora_autocomplete_menu() {
 }
 
 /**
+ * Implements hook_init().
+ */
+function islandora_autocomplete_init() {
+  // add styling
+  drupal_add_css(drupal_get_path('module', 'islandora_autocomplete') . '/css/islandora_autocomplete.base.css');
+}
+
+/**
  * Implements hook_perm().
  */
 function islandora_autocomplete_perm() {
