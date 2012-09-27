@@ -19,10 +19,10 @@
  */
 function islandora_autocomplete_solr_form(array &$form_state, $url_id = NULL) {
   module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
-
+  drupal_add_css(drupal_get_path('module', 'islandora_autocomplete_solr') . '/css/islandora_autocomplete_solr.admin.css');
+  // get db values
   $row = islandora_autocomplete_solr_db_get_url_source($url_id);
-dsm($form_state);
-dsm($url_id);
+
   $form = array();
 
   // reset title
@@ -34,6 +34,7 @@ dsm($url_id);
     '#description' => t('Solr field from which to return values.'),
     '#title' => t('Solr field'),
     '#default_value' => $row->solr_field ? $row->solr_field : '',
+    '#required' => TRUE,
   );
   // NGrams?
   $form['use_ngram'] = array(
@@ -56,7 +57,16 @@ dsm($url_id);
   );
   
   // NGram field
-  if (!empty($form_state['values']['use_ngram']) OR !empty($row->use_ngram)) {
+  $render_ngram = FALSE;
+  if ($form_state['ahah_submission'] == TRUE) {
+    if ($form_state['values']['use_ngram'] == 1) {
+      $render_ngram = TRUE;
+    }
+  }
+  elseif ($row->use_ngram == 1) {
+    $render_ngram = TRUE;
+  }
+  if ($render_ngram) {
     $form['ngram_field_wrapper']['ngram_field'] = array(
       '#type' => 'textfield',
       '#description' => t('NGram field on which to query.'),
@@ -99,30 +109,40 @@ function islandora_autocomplete_solr_form_validate(array $form, array &$form_sta
  *   The drupal form state.
  */
 function islandora_autocomplete_solr_form_submit(array $form, array &$form_state) {
-  module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
-  extract($form_state['values'], EXTR_SKIP);
-  if (!empty($solr_field)) { // solr field
-    if (isset($url_id)) { // File already existed
-      $source = islandora_autocomplete_solr_db_get_url_source($url_id);
-      // create values array
-      $values = array(
-        'solr_field' => $solr_field,
-        'comma_separated' => $comma_separated,
-        'use_ngram' => $use_ngram,
-        'ngram_field' => $ngram_field,
-      );
-      if ($source) { // Source exists, update it.
-        islandora_autocomplete_solr_db_update_url_source($source->id, $url_id, $values);
-        return; // Updated Source.
-      } // Add new source.
-      islandora_autocomplete_solr_db_add_url_source($url_id, $values);
+
+  // don't use sumbit functions when ahah is called.
+  if ($form_state['ahah_submission'] !== TRUE) {
+    module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
+    extract($form_state['values'], EXTR_SKIP);
+
+    if (!empty($solr_field)) { // solr field
+      if (isset($url_id)) { // File already existed
+        $source = islandora_autocomplete_solr_db_get_url_source($url_id);
+        // create values array
+        $values = array(
+          'solr_field' => $solr_field ? $solr_field : '',
+          'comma_separated' => $comma_separated,
+          'use_ngram' => $use_ngram,
+          'ngram_field' => $ngram_field ? $ngram_field : '',
+        );
+        if ($source) { // Source exists, update it.
+          islandora_autocomplete_solr_db_update_url_source($source->id, $url_id, $values);
+          return; // Updated Source.
+        } // Add new source.
+        islandora_autocomplete_solr_db_add_url_source($url_id, $values);
+      }
     }
   }
 }
 
-
+/**
+ * islandora autocomplete solr ahah callback
+ */
 function islandora_autocomplete_solr_admin_ahah() {
-  $form_state = array('storage' => NULL, 'submitted' => FALSE);  // , 'post' => $_POST
+  // include original form file
+  module_load_include('inc', 'islandora_autocomplete', 'includes/islandora_autocomplete.admin');
+  // generic AHAH fiddling
+  $form_state = array('storage' => NULL, 'submitted' => FALSE);
   $form_build_id = $_POST['form_build_id'];
   $form = form_get_cache($form_build_id, $form_state);
   $args = $form['#parameters'];
@@ -132,65 +152,23 @@ function islandora_autocomplete_solr_admin_ahah() {
   $form_state['ahah_submission'] = TRUE;
   $form['#programmed'] = $form['#redirect'] = FALSE;
   drupal_process_form($form_id, $form, $form_state);
-dsm($form);
   $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
-dsm($form);
-//  $ngram_wrapper = $form['ngram_field_wrapper'];
+
+  // NGram wrapper
+  $ngram_wrapper = $form['source_form']['ngram_field_wrapper'];
 
   // Remove the prefix/suffix wrapper so we don't double it up.
-//  unset($ngram_wrapper['#prefix'], $ngram_wrapper['#suffix']);
+  unset($ngram_wrapper['#prefix'], $ngram_wrapper['#suffix']);
 
   // Render the output.
-  $output = theme('status_messages');
-  $output .= drupal_render($ngram_wrapper);
+//  $output = theme('status_messages');
+  $output = drupal_render($ngram_wrapper);
 
   // Final rendering callback.
   drupal_json(array('status' => TRUE, 'data' => $output));
   exit();
-
-
-/*
-  if (!isset($_REQUEST['form_build_id'])) { // Request is not valid
-    header("HTTP/1.0 200 OK", FALSE, 200);
-    exit();
-  }
-  $form_build_id = $_REQUEST['form_build_id'];
-  $form_state = array('storage' => NULL, 'submitted' => FALSE, 'post' => $_POST);
-  if (!$form = form_get_cache($form_build_id, $form_state)) {
-    header("HTTP/1.0 200 OK", FALSE, 200);
-    exit();
-  }
-  $args = $form['#parameters'];
-  $form_id = array_shift($args);
-  $form_state['post'] = $form['#post'] = $_POST;
-  $form['#programmed'] = $form['#redirect'] = FALSE;
-  drupal_process_form($form_id, $form, $form_state);
-  $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
-  drupal_get_messages('error'); // Clear errors.
-  $html = '';
-  if (isset($form)) {
-    unset($form['source_form']['#prefix'], $form['source_form']['#suffix']);
-    $html = drupal_render($form['source_form']);
-  }
-  $javascript = drupal_add_js(NULL, NULL, 'header');
-  $settings = call_user_func_array('array_merge_recursive', $javascript['setting']);
-  unset($settings['ahah']['']);
-  drupal_json(array(
-    'status' => TRUE,
-    'data' => theme('status') . $html,
-    'settings' => $settings,
-  ));
-*/
-  
 }
 
 
-
-/**
- * Does the very standard things that must be done in any normal callback.
- */
-function islandora_autocomplete_solr_callback_helper() {
-
-}
 
 
