@@ -61,6 +61,15 @@ function islandora_autocomplete_solr_schema() {
           'type' => 'int',
           'not null' => TRUE,
         ),
+        'use_ngram' => array(
+          'type' => 'int',
+          'not null' => TRUE,
+        ),
+        'ngram_field' => array(
+          'type' => 'varchar',
+          'length' => 256,
+          'not null' => TRUE,
+        ),
       ),
       'primary key' => array('id'),
     )

@@ -9,6 +9,22 @@
 ini_set("auto_detect_line_endings", FALSE);
 
 /**
+ * Implements hook_menu().
+ */
+function islandora_autocomplete_solr_menu() {
+
+  return array(
+    'admin/content/autocomplete/ahah/solr' => array(
+      'file' => 'includes/islandora_autocomplete_solr.admin.inc',
+      'page callback' => 'islandora_autocomplete_solr_admin_ahah',
+      'access callback' => 'user_access',
+      'access arguments' => array(PERM_ISLANDORA_AUTOCOMPLETE_ADMIN),
+      'type' => MENU_CALLBACK,
+    ),
+  );
+}
+
+/**
  * Implements hook_register_autocomplete_source().
  */
 function islandora_autocomplete_solr_register_autocomplete_source() {

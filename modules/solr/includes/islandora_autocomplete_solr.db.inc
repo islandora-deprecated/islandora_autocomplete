@@ -46,12 +46,15 @@ function islandora_autocomplete_solr_db_get_url_source($url_id) {
  * @return boolean
  *   TRUE if successful FALSE otherwise.
  */
-function islandora_autocomplete_solr_db_add_url_source($url_id, $solr_field, $comma_separated) {
+function islandora_autocomplete_solr_db_add_url_source($url_id, $values) {
+
   if (db_result(db_query('SELECT count(id) FROM {%s} WHERE url_id = %d', TABLE_ISLANDORA_AUTOCOMPLETE_SOLR, $url_id)) == 0) {
     $object = new stdClass();
     $object->url_id = $url_id;
     $object->solr_field = $solr_field;
     $object->comma_separated = $comma_separated;
+    $object->use_ngram = $use_ngram;
+    $object->ngram_field = $ngram_field;
     return drupal_write_record(TABLE_ISLANDORA_AUTOCOMPLETE_SOLR, $object) !== FALSE;
   }
   return FALSE;
@@ -72,7 +75,11 @@ function islandora_autocomplete_solr_db_add_url_source($url_id, $solr_field, $co
  * @return boolean
  *   TRUE if successful FALSE otherwise.
  */
-function islandora_autocomplete_solr_db_update_url_source($id, $url_id, $solr_field, $comma_separated) {
+function islandora_autocomplete_solr_db_update_url_source($id, $url_id, $values) {
+  extract($values, EXTR_SKIP);
+dsm($solr_field);
+dsm($use_ngram);
+dsm($ngram_field);
   $source = islandora_autocomplete_solr_db_get_url_source($url_id);
   if ($source !== FALSE) {
     $object = new stdClass();
@@ -80,6 +87,8 @@ function islandora_autocomplete_solr_db_update_url_source($id, $url_id, $solr_fi
     $object->url_id = $url_id;
     $object->solr_field = $solr_field;
     $object->comma_separated = $comma_separated;
+    $object->use_ngram = $use_ngram;
+    $object->ngram_field = $ngram_field;
     return drupal_write_record(TABLE_ISLANDORA_AUTOCOMPLETE_SOLR, $object, 'id');
   }
   return FALSE;
