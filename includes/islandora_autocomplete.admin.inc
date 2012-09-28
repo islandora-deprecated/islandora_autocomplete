@@ -396,6 +396,12 @@ function islandora_autocomplete_form_validate(array $form, array &$form_state) {
  */
 function islandora_autocomplete_form_submit(array $form, array &$form_state) {
   extract($form_state['values'], EXTR_SKIP);
+
+  // prevent submitting form on ahah call
+  if (isset($form_state['post'])) {
+    return;
+  }
+
   if (isset($id)) {
     islandora_autocomplete_form_submit_update_source($id, $source);
     islandora_autocomplete_db_update_url($id, $name, $description, $source, $fields);
