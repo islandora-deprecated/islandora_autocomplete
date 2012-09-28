@@ -1,1 +1,46 @@
-@todo implement.
+Islandora autocomplete solr
+===========================
+
+Solr autocomplete can be done in 2 ways: using facet.prefix or NGrams.
+
+
+Facet.prefix
+------------
+
+- requires only one solr field (untokenized text)
+- case sensitive
+- only autocompletes from the very first string.
+- multivalued fields are possible
+
+NGram tokenizer
+---------------
+
+- requires an untokenized solr field and a field with NGram tokenizer
+- case insensitive
+- autocompletes from the start of every single word in the string (in this configuration)
+- multivalued are possible, but best performance is achieved with single valued fields
+
+Add this snippet to schema.xml in the <fields> element.
+It tokenizes the strings on whitespace, turns it into lowercase and creates NGrams of it.
+There are other ways to NGram strings, but in this example we use EdgeNGram, which starts splitting
+the strings up starting on one end.
+Eg: Nigerian => "ni", "nig", "nige", "niger", "nigeri", "nigeria", "nigeria", "nigerian"
+More info: http://wiki.apache.org/solr/AnalyzersTokenizersTokenFilters#solr.EdgeNGramFilterFactory
+
+<!-- EdgeNGramFilterFactory -->
+
+<fieldType name="text_ngram" class="solr.TextField" positionIncrementGap="100">
+  <analyzer type="index">
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>
+    <filter class="solr.EdgeNGramFilterFactory" minGramSize="1" maxGramSize="15" side="front"/>
+  </analyzer>
+  <analyzer type="query">
+    <tokenizer class="solr.WhitespaceTokenizerFactory"/>
+    <filter class="solr.LowerCaseFilterFactory"/>      
+  </analyzer>
+</fieldType>
+
+Assign the NGram type to a field. In this case all fields with the _ng suffix.
+
+<dynamicField name="*_ng" type="text_ngram"  indexed="true"  stored="true" multiValued="true"/>
