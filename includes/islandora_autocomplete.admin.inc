@@ -422,7 +422,6 @@ function islandora_autocomplete_form_submit(array $form, array &$form_state) {
   if (isset($form_state['post'])) {
     return;
   }
-
   if (isset($id)) {
     islandora_autocomplete_form_submit_update_source($id, $source);
     islandora_autocomplete_db_update_url($id, $name, $description, $source, $fields);
@@ -459,15 +458,19 @@ function islandora_autocomplete_form_submit_update_source($id, $source) {
 /**
  * Call the submit hook for the source section of the form.
  *
+ * @param string $type
+ *   The type autocomplete source.
  * @param array $form
  *   The drupal form.
  * @param array $form_state
  *   The drupal form state.
  */
 function islandora_autocomplete_source_form_submit($type, array $form, array &$form_state) {
+
   if (($source = islandora_autocomplete_get_source($type)) != FALSE) {
     module_load_include($source['form']['type'], $source['module'], $source['form']['file']);
     $hook = "{$source['module']}_form_submit";
+
     if (function_exists($hook)) {
       call_user_func_array($hook, array($form, &$form_state));
     }

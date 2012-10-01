@@ -24,8 +24,9 @@ function islandora_autocomplete_solr_db_get_solr_fields() {
  * @param int $url_id
  *   The unique id for the requested Autocomplete URL.
  *
- * @return
- *   An object representing the given autocomplete url solr source identified by name, or FALSE.
+ * @return object
+ *   An object representing the given autocomplete url
+ *   solr source identified by name, or FALSE.
  *   The attributes of this object are the table fields selected by the query.
  */
 function islandora_autocomplete_solr_db_get_url_source($url_id) {
@@ -55,6 +56,7 @@ function islandora_autocomplete_solr_db_add_url_source($url_id, $values) {
     $object->comma_separated = $comma_separated;
     $object->use_ngram = $use_ngram;
     $object->ngram_field = $ngram_field ? $ngram_field : '';
+
     return drupal_write_record(TABLE_ISLANDORA_AUTOCOMPLETE_SOLR, $object) !== FALSE;
   }
   return FALSE;

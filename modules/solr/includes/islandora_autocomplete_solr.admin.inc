@@ -24,7 +24,6 @@ function islandora_autocomplete_solr_form(array &$form_state, $url_id = NULL) {
   drupal_add_css(drupal_get_path('module', 'islandora_autocomplete_solr') . '/css/islandora_autocomplete_solr.admin.css');
   // Gt db values.
   $row = islandora_autocomplete_solr_db_get_url_source($url_id);
-
   $form = array();
 
   // Reset title.
@@ -110,7 +109,6 @@ function islandora_autocomplete_solr_form_validate(array $form, array &$form_sta
  *   The drupal form state.
  */
 function islandora_autocomplete_solr_form_submit(array $form, array &$form_state) {
-
   // Don't use sumbit functions when ahah is called.
   if ($form_state['ahah_submission'] !== TRUE) {
     module_load_include('inc', 'islandora_autocomplete_solr', 'includes/islandora_autocomplete_solr.db');
