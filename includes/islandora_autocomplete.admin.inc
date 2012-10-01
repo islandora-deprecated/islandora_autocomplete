@@ -538,7 +538,7 @@ function islandora_autocomplete_form_ahah() {
   }
   $javascript = drupal_add_js(NULL, NULL, 'header');
   $settings = call_user_func_array('array_merge_recursive', $javascript['setting']);
-  //unset($settings['ahah']['']);
+  unset($settings['ahah']['']);
   drupal_json(array(
     'status' => TRUE,
     'data' => theme('status') . $html,
