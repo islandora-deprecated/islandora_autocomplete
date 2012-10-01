@@ -6,6 +6,7 @@
  * Contains the hooks this module responds to. As well as any
  * functions that need to be present for every page request.
  */
+
 define('MENU_ISLANDORA_AUTOCOMPLETE', 'autocomplete');
 define('MENU_ISLANDORA_AUTOCOMPLETE_ADMIN', 'admin/content/autocomplete');
 define('MENU_ISLANDORA_AUTOCOMPLETE_AHAH_SOURCE', 'admin/content/autocomplete/ahah/source');
@@ -94,7 +95,7 @@ function islandora_autocomplete_menu() {
       'access callback' => 'user_access',
       'access arguments' => array(PERM_ISLANDORA_AUTOCOMPLETE_ADMIN),
       'type' => MENU_CALLBACK,
-    )
+    ),
   );
 }
 
@@ -102,7 +103,7 @@ function islandora_autocomplete_menu() {
  * Implements hook_init().
  */
 function islandora_autocomplete_init() {
-  // add styling
+  // Add styling.
   drupal_add_css(drupal_get_path('module', 'islandora_autocomplete') . '/css/islandora_autocomplete.base.css');
 }
 
@@ -121,7 +122,7 @@ function islandora_autocomplete_perm() {
 function islandora_autocomplete_help($path, $arg) {
   switch ($path) {
     case MENU_ISLANDORA_AUTOCOMPLETE_ADMIN:
-      return '<p>' . t('Below is a list of all the autocomplete url\'s on your site.') . '</p>';
+      return '<p>' . t("Below is a list of all the autocomplete url's on your site.") . '</p>';
       break;
     default:
       return '';
@@ -144,7 +145,7 @@ function islandora_autocomplete_get_sources() {
       'module' => '',
       'form' => array(
         'type' => 'inc',
-        'file' => ''
+        'file' => '',
       ),
     );
     foreach ($sources as &$source) {
