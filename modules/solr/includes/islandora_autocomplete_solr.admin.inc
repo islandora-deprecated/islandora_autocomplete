@@ -83,8 +83,7 @@ function islandora_autocomplete_solr_form(array &$form_state, $url_id = NULL) {
     '#default_value' => $row->comma_separated ? $row->comma_separated : '',
   );
 
-  // @TODO: autocomplete style: NGrams, facet prefix (not sure if this is necessary)
-
+  // @TODO autocomplete style: NGrams, facet prefix (not sure if it's necessary)
   return $form;
 }
 

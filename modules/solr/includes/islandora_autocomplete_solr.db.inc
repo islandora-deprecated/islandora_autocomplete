@@ -5,12 +5,14 @@
  *
  * Functions to abstract this modules database usage.
  */
+
 define('TABLE_ISLANDORA_AUTOCOMPLETE_SOLR', 'islandora_autocomplete_solr');
 
 /**
- * Performs a query and retrieves all the Autocomplete URL's stored in the database.
+ * Performs a query and retrieves all
+ * the Autocomplete URL's stored in the database.
  *
- * @return
+ * @return object
  *   A database query result resource, or FALSE if the query was not
  *   executed correctly.
  */
@@ -37,12 +39,10 @@ function islandora_autocomplete_solr_db_get_url_source($url_id) {
 /**
  * Adds a new autocomplete URL if one by the same name doesn't already exist.
  *
- * @param string $name
- *   The unique name of the URL to add.
- * @param string $description
- *   A short description of the URL's purpose.
- * @param string $source
- *   The source used to populate the autocomplete URL.
+ * @param int $url_id
+ *   The unique id for the requested Autocomplete URL.
+ * @param array $values
+ *   the values to add to the database.
  *
  * @return boolean
  *   TRUE if successful FALSE otherwise.
@@ -67,12 +67,10 @@ function islandora_autocomplete_solr_db_add_url_source($url_id, $values) {
  *
  * @param int $id
  *   The unique ID for the record we want to update.
- * @param string $name
- *   The unique name of the URL to add.
- * @param string $description
- *   A short description of the URL's purpose.
- * @param string $source
- *   The source used to populate the autocomplete URL.
+ * @param int $url_id
+ *   The unique id for the requested Autocomplete URL.
+ * @param array $values
+ *   the values to add to the database.
  *
  * @return boolean
  *   TRUE if successful FALSE otherwise.
