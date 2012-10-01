@@ -48,7 +48,7 @@ function islandora_autocomplete_solr_db_get_url_source($url_id) {
  *   TRUE if successful FALSE otherwise.
  */
 function islandora_autocomplete_solr_db_add_url_source($url_id, $values) {
-
+  extract($values, EXTR_SKIP);
   if (db_result(db_query('SELECT count(id) FROM {%s} WHERE url_id = %d', TABLE_ISLANDORA_AUTOCOMPLETE_SOLR, $url_id)) == 0) {
     $object = new stdClass();
     $object->url_id = $url_id;
