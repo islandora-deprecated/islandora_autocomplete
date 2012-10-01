@@ -47,7 +47,6 @@ function islandora_autocomplete_solr_form(array &$form_state, $url_id = NULL) {
       'path' => 'admin/content/autocomplete/ahah/solr',
       'wrapper' => 'ngram-wrapper',
       'effect' => 'fade',
-      // 'event' => 'change', default value: does not need to be set explicitly.
     ),
   );
   // NGram field wrapper.
@@ -141,6 +140,7 @@ function islandora_autocomplete_solr_form_submit(array $form, array &$form_state
  * islandora autocomplete solr ahah callback
  */
 function islandora_autocomplete_solr_admin_ahah() {
+
   // Include original form file.
   module_load_include('inc', 'islandora_autocomplete', 'includes/islandora_autocomplete.admin');
   // Generic AHAH fiddling.
@@ -155,7 +155,6 @@ function islandora_autocomplete_solr_admin_ahah() {
   $form['#programmed'] = $form['#redirect'] = FALSE;
   drupal_process_form($form_id, $form, $form_state);
   $form = drupal_rebuild_form($form_id, $form_state, $args, $form_build_id);
-
   // NGram wrapper.
   $ngram_wrapper = $form['source_form']['ngram_field_wrapper'];
 
@@ -168,5 +167,6 @@ function islandora_autocomplete_solr_admin_ahah() {
 
   // Final rendering callback.
   drupal_json(array('status' => TRUE, 'data' => $output));
+
   exit();
 }

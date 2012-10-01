@@ -208,6 +208,10 @@ function islandora_autocomplete_view_form_submit(array $form, array &$form_state
  *   If not preset this form will be used to create a new url.
  */
 function islandora_autocomplete_form(array &$form_state, $name = '') {
+  // Some elements with ahah action are ahah'd in this JS fixes that.
+  module_load_include('inc', 'php_lib', 'Ahah');
+  Ahah::get_ahah_js();
+
   islandora_autocomplete_form_include_resources();
   $values = islandora_autocomplete_form_values($form_state, $name);
   if (empty($values['source'])) {
@@ -373,8 +377,6 @@ function islandora_autocomplete_source_form_options() {
  *   The form element to validate.
  * @param array $form_state
  *   The drupal form state.
- * @param array $complete_form
- *   The drupal form.
  */
 function islandora_autocomplete_form_validate_name($element, array &$form_state) {
   $values = $form_state['values'];
@@ -536,7 +538,7 @@ function islandora_autocomplete_form_ahah() {
   }
   $javascript = drupal_add_js(NULL, NULL, 'header');
   $settings = call_user_func_array('array_merge_recursive', $javascript['setting']);
-  unset($settings['ahah']['']);
+  //unset($settings['ahah']['']);
   drupal_json(array(
     'status' => TRUE,
     'data' => theme('status') . $html,
