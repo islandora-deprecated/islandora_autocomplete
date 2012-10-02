@@ -5,15 +5,17 @@
  *
  * Functions to abstract this modules database usage.
  */
+
 define('ISLANDORA_AUTOCOMPLETE_URL_MAX_NAME_LENGTH', 64);
 define('ISLANDORA_AUTOCOMPLETE_URL_MAX_DESCRIPTION_LENGTH', 256);
 define('ISLANDORA_AUTOCOMPLETE_URL_MAX_SOURCE_NAME_LENGTH', 64);
 define('TABLE_ISLANDORA_AUTOCOMPLETE', 'islandora_autocomplete');
 
 /**
- * Performs a query and retrieves all the Autocomplete URL's stored in the database.
+ * Performs a query and retrieves all the Autocomplete
+ * URL's stored in the database.
  *
- * @return
+ * @return object
  *   A database query result resource, or FALSE if the query was not
  *   executed correctly.
  */
@@ -22,10 +24,11 @@ function islandora_autocomplete_db_get_urls() {
 }
 
 /**
- * Performs a query and retrieves all the Autocomplete URL's stored in the database that are not used with the
+ * Performs a query and retrieves all the Autocomplete URL's
+ * stored in the database that are not used with the
  * multifield form.
  *
- * @return
+ * @return object
  *   A database query result resource, or FALSE if the query was not
  *   executed correctly.
  */
@@ -39,8 +42,9 @@ function islandora_autocomplete_db_get_non_multifield_urls() {
  * @param int $id
  *   The unique id for the requested Autocomplete URL.
  *
- * @return
- *   An object representing the given autocomplete url identified by name, or FALSE. The attributes
+ * @return object
+ *   An object representing the given autocomplete
+ *   url identified by name, or FALSE. The attributes
  *   of this object are the table fields selected by the query.
  */
 function islandora_autocomplete_db_get_url($id) {
@@ -54,8 +58,9 @@ function islandora_autocomplete_db_get_url($id) {
  * @param string $name
  *   The unique machine name for the requested Autocomplete URL.
  *
- * @return
- *   An object representing the given autocomplete url identified by name, or FALSE. The attributes
+ * @return object
+ *   An object representing the given autocomplete
+ *   url identified by name, or FALSE. The attributes
  *   of this object are the table fields selected by the query.
  */
 function islandora_autocomplete_db_get_url_by_name($name) {
@@ -132,11 +137,13 @@ function islandora_autocomplete_db_delete_url($id) {
 }
 
 /**
- * Adds a foriegn key constaint to the given table such that if a given autocomplete url is
- * delete than the corresponding row in the given table will be deleted as well.
+ * Adds a foriegn key constaint to the given table such
+ * that if a given autocomplete url is delete than the corresponding
+ * row in the given table will be deleted as well.
  *
  * Note:
- *  This requires the the given table has a field url_id which is to be used as the
+ *  This requires the the given table has a field url_id
+ *  which is to be used as the
  *  foriegn key for the given table.
  *
  * @param string $table
