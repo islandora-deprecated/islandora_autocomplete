@@ -1,0 +1,27 @@
+/* autocomplete styling */
+#autocomplete
+{
+  max-height: 400px;
+  overflow: auto;
+  background-color: #fff;
+}
+
+#autocomplete ul
+{
+  
+}
+
+#autocomplete ul li
+{
+  padding: 3px 5px;
+}
+
+#autocomplete ul li:nth-child(even)
+{
+  background-color: #eee;
+}
+
+#autocomplete ul li.selected:nth-child(even)
+{
+  background-color: #0074BD;
+}
