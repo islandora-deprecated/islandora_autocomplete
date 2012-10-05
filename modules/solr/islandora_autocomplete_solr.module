@@ -96,8 +96,13 @@ function islandora_autocomplete_url_query_solr($url_id, $query = '', $index = NU
       }
     }
 
-    $query = Apache_Solr_Service::escape($query);    
-    
+      if (!empty($query)) {
+        $query = Apache_Solr_Service::escape($query);    
+      }
+      else {
+        return $query;
+      }
+
     // use Solr faceting to get list of names
     $parsed_url = parse_url(variable_get('islandora_solr_search_block_url', 'http://localhost:8080/solr'));
     $solr_object = new Apache_Solr_Service($parsed_url['host'], $parsed_url['port'], $parsed_url['path']);
