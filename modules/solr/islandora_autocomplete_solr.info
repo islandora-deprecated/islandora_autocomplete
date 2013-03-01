@@ -3,5 +3,5 @@ description = Allows users to define autocomplete URL's that get populated by So
 package = Islandora Tools
 dependencies[] = islandora_autocomplete
 dependencies[] = islandora_solr_search
-version = 6.x-12.3.0-RC
+version = 6.x-13.1-RC1
 core = 6.x

@@ -2,5 +2,5 @@ name = Islandora Autocomplete
 description = Allows users to define auto-complete URL's to be used in a Drupal forms in conjuction with the #autocomplete property of form elements
 package = Islandora Tools
 dependencies[] = php_lib
-version = 6.x-12.3.0-RC
+version = 6.x-13.1-RC1
 core = 6.x
